@@ -75,3 +75,4 @@ npm start
 ``` bash
 lighthouse http://localhost:3000/discover --view
 ```
+![alt text](<Screenshot (31)-1.png>)
