@@ -17,9 +17,16 @@
         "name": "next"
       }
     ],
+    "baseUrl": ".",
     "paths": {
-      "@/*": ["./src/*"]
-    }
+  "@/*": ["src/*"],                 // ✅ Correct root alias
+  "@/app/*": ["src/app/*"],
+  "@/components/*": ["src/components/*"],
+  "@/hooks/*": ["src/hooks/*"],
+  "@/lib/*": ["src/lib/*"],
+  "@/redux/*": ["src/redux/*"]      // ✅ use "redux", not "store"
+}
+
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
   "exclude": ["node_modules"]

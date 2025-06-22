@@ -1,36 +1,77 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# Axiom Discover Replica – Token Table UI
 
-## Getting Started
+Built with Next.js 14 App Router, Tailwind CSS, TypeScript, React Query, Redux Toolkit.
 
-First, run the development server:
+Features
 
+Real-time Data: Mocked live price updates via custom React hook.
+
+Timeframes: Switch between 1h, 24h, and 7d percentage changes.
+
+Sorting: Sort by Pair, Price, Market Cap, Liquidity, Volume, TXNS.
+
+Infinite Scroll: Load more rows as you scroll.
+
+UI Components: Tooltips, Popovers, Modals (Radix UI via shadcn/ui).
+
+Theme Support: Light and Dark mode toggling with next-themes.
+
+Performance: Production build optimized, Lighthouse score > 90.
+
+Project Structure
+
+─ src/
+│   ├── app/
+│   │   ├── layout.tsx        # Root layout with providers & theme
+│   │   ├── page.tsx          # Landing page
+│   │   └── discover/
+│   │       └── page.tsx      # DiscoverPage with TokenTable
+│   ├── components/
+│   │   ├── table/
+│   │   │   ├── TokenTable.tsx
+│   │   │   └── TableRow.tsx
+│   │   └── ThemeToggle.tsx   # Theme switch button
+│   ├── hooks/
+│   │   ├── useMockLiveData.ts
+│   │   ├── useSort.ts
+│   │   └── usePagination.ts
+│   ├── lib/
+│   │   └── utils.ts          # generateMockData
+│   ├── redux/                # Redux slice and store
+│   └── types/                # TypeScript types
+├── tailwind.config.ts
+├── next.config.js
+└── README.md
+
+Getting Started
+
+1. Install dependencies
+  
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+```
+2. Run development server
+ 
+```bash
+Run development server
+```
+3. Open in browser
+
+  Navigate to http://localhost:3000 and go to /discover.
+
+Production Build
+
+1. Build
+```bash
+npm run build
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Start
+```bash 
+npm start
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/basic-features/font-optimization) to automatically optimize and load Inter, a custom Google Font.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+3. Analyze
+``` bash
+lighthouse http://localhost:3000/discover --view
+```
