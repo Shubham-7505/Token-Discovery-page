@@ -5,7 +5,7 @@ import useMockLiveData from "@/hooks/useMockLiveData";
 import { useSort } from "@/hooks/useSort";
 import { TimeFrame } from "@/types/token";
 import dynamic from "next/dynamic";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 // Dynamic imports
 const TableRow = dynamic(() => import("@/components/table/TableRow"), {
@@ -37,15 +37,10 @@ type TokenData = {
 
 export default function TokenTable() {
   const live = useMockLiveData();
-  const [liveData, setLiveData] = useState<TokenData[]>([]);
   const { sortBy, sortOrder, onSort } = useSort();
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("1h");
 
-  useEffect(() => {
-    setLiveData(live);
-  }, [live]);
-
-  const sortedData = [...liveData].sort((a, b) => {
+  const sortedData = [...live].sort((a, b) => {
     const parseValue = (val: string) => parseInt(val.replace(/\D/g, "")) || 0;
 
     switch (sortBy) {
@@ -96,45 +91,27 @@ export default function TokenTable() {
           ))}
         </div>
 
-        {/* Table with Scrollable Container */}
+        {/* Table */}
         <div className="h-[600px] overflow-y-auto border rounded dark:border-gray-700">
           <table className="min-w-full text-sm text-left">
             <thead className="sticky top-0 bg-gray-100 dark:bg-gray-900 z-20 shadow-sm">
               <tr className="border-b text-sm font-semibold text-gray-700 dark:text-gray-200 dark:border-gray-700 h-[52px]">
-                <th
-                  className="px-4 py-3 w-[160px] cursor-pointer select-none"
-                  onClick={() => onSort("pair")}
-                >
+                <th className="px-4 py-3 w-[160px] cursor-pointer select-none" onClick={() => onSort("pair")}>
                   Pair {sortBy === "pair" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
-                <th
-                  className="px-4 py-3 cursor-pointer select-none"
-                  onClick={() => onSort("marketCap")}
-                >
+                <th className="px-4 py-3 cursor-pointer select-none" onClick={() => onSort("marketCap")}>
                   Market Cap {sortBy === "marketCap" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
-                <th
-                  className="px-4 py-3 cursor-pointer select-none"
-                  onClick={() => onSort("liquidity")}
-                >
+                <th className="px-4 py-3 cursor-pointer select-none" onClick={() => onSort("liquidity")}>
                   Liquidity {sortBy === "liquidity" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
-                <th
-                  className="px-4 py-3 cursor-pointer select-none"
-                  onClick={() => onSort("price")}
-                >
+                <th className="px-4 py-3 cursor-pointer select-none" onClick={() => onSort("price")}>
                   Price {sortBy === "price" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
-                <th
-                  className="px-4 py-3 cursor-pointer select-none"
-                  onClick={() => onSort("volume")}
-                >
+                <th className="px-4 py-3 cursor-pointer select-none" onClick={() => onSort("volume")}>
                   Volume {sortBy === "volume" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
-                <th
-                  className="px-4 py-3 cursor-pointer select-none"
-                  onClick={() => onSort("txns")}
-                >
+                <th className="px-4 py-3 cursor-pointer select-none" onClick={() => onSort("txns")}>
                   TXNS {sortBy === "txns" ? (sortOrder === "asc" ? "↑" : "↓") : ""}
                 </th>
                 <th className="px-4 py-3">Audit</th>
@@ -148,7 +125,7 @@ export default function TokenTable() {
                     <SkeletonRow key={`skeleton-${i}`} />
                   ))
                 : sortedData.map((token) => (
-                    <TableRow key={token.pair} token={token} timeFrame={timeFrame} />
+                    <TableRow key={`${token.pair}-${token.price}`} token={token} timeFrame={timeFrame} />
                   ))}
             </tbody>
           </table>

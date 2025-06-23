@@ -1,7 +1,6 @@
 import "./globals.css";
 import { AppProviders } from "./providers";
 import { Inter } from "next/font/google";
-import { ThemeProvider } from "next-themes"; // ✅ Add this import
 
 const inter = Inter({
   subsets: ["latin"],
@@ -24,10 +23,8 @@ export default function RootLayout({
       <body
         className={`${inter.className} bg-white text-black dark:bg-gray-950 dark:text-white transition-colors duration-300`}
       >
-        {/* ✅ Wrap children in ThemeProvider */}
-        <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-          <AppProviders>{children}</AppProviders>
-        </ThemeProvider>
+        {/* AppProviders already wraps ThemeProvider */}
+        <AppProviders>{children}</AppProviders>
       </body>
     </html>
   );
