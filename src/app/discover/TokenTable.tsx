@@ -1,11 +1,12 @@
 "use client";
 
 import ErrorBoundary from "@/components/ErrorBoundary";
-import useMockLiveData from "@/hooks/useMockLiveData";
+import useTokenData from "@/hooks/useTokenData"; // ✅ updated hook
+import useTokenLivePrices from "@/hooks/useTokenLivePrices"; // ✅ WebSocket hook
 import { useSort } from "@/hooks/useSort";
 import { TimeFrame } from "@/types/token";
 import dynamic from "next/dynamic";
-import { useState } from "react";
+import { useState, useMemo } from "react";
 
 // Dynamic imports
 const TableRow = dynamic(() => import("@/components/table/TableRow"), {
@@ -21,55 +22,56 @@ const SkeletonRow = dynamic(() => import("@/components/table/SkeletonRow"), {
   ssr: true,
 });
 
-type TokenData = {
-  pair: string;
-  marketCap: string;
-  liquidity: string;
-  volume: string;
-  txns: string;
-  auditStatus: string;
-  price: number;
-  change1h: number;
-  change24h: number;
-  change7d: number;
-  logo: string;
-};
-
 export default function TokenTable() {
-  const live = useMockLiveData();
+  const { data, loading } = useTokenData();
   const { sortBy, sortOrder, onSort } = useSort();
   const [timeFrame, setTimeFrame] = useState<TimeFrame>("1h");
 
-  const sortedData = [...live].sort((a, b) => {
+  // Live prices using CoinCap WebSocket
+  const symbols = useMemo(() => data.map(token => token.pair.split("/")[0]), [data]);
+  const livePrices = useTokenLivePrices(symbols);
+
+  // Sorted and enriched data
+  const sortedData = useMemo(() => {
     const parseValue = (val: string) => parseInt(val.replace(/\D/g, "")) || 0;
 
-    switch (sortBy) {
-      case "pair":
-        return sortOrder === "asc"
-          ? a.pair.localeCompare(b.pair)
-          : b.pair.localeCompare(a.pair);
-      case "price":
-        return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
-      case "marketCap":
-        return sortOrder === "asc"
-          ? parseValue(a.marketCap) - parseValue(b.marketCap)
-          : parseValue(b.marketCap) - parseValue(a.marketCap);
-      case "liquidity":
-        return sortOrder === "asc"
-          ? parseValue(a.liquidity) - parseValue(b.liquidity)
-          : parseValue(b.liquidity) - parseValue(a.liquidity);
-      case "volume":
-        return sortOrder === "asc"
-          ? parseValue(a.volume) - parseValue(b.volume)
-          : parseValue(b.volume) - parseValue(a.volume);
-      case "txns":
-        return sortOrder === "asc"
-          ? parseValue(a.txns) - parseValue(b.txns)
-          : parseValue(b.txns) - parseValue(a.txns);
-      default:
-        return 0;
-    }
-  });
+    return [...data]
+      .map(token => {
+        const symbol = token.pair.split("/")[0].toLowerCase();
+        const livePrice = livePrices[symbol]?.priceUsd;
+
+        return {
+          ...token,
+          price: livePrice ? +parseFloat(livePrice).toFixed(4) : token.price,
+        };
+      })
+      .sort((a, b) => {
+        switch (sortBy) {
+          case "pair":
+            return sortOrder === "asc" ? a.pair.localeCompare(b.pair) : b.pair.localeCompare(a.pair);
+          case "price":
+            return sortOrder === "asc" ? a.price - b.price : b.price - a.price;
+          case "marketCap":
+            return sortOrder === "asc"
+              ? parseValue(a.marketCap) - parseValue(b.marketCap)
+              : parseValue(b.marketCap) - parseValue(a.marketCap);
+          case "liquidity":
+            return sortOrder === "asc"
+              ? parseValue(a.liquidity) - parseValue(b.liquidity)
+              : parseValue(b.liquidity) - parseValue(a.liquidity);
+          case "volume":
+            return sortOrder === "asc"
+              ? parseValue(a.volume) - parseValue(b.volume)
+              : parseValue(b.volume) - parseValue(a.volume);
+          case "txns":
+            return sortOrder === "asc"
+              ? parseValue(a.txns) - parseValue(b.txns)
+              : parseValue(b.txns) - parseValue(a.txns);
+          default:
+            return 0;
+        }
+      });
+  }, [data, livePrices, sortBy, sortOrder]);
 
   return (
     <div className="overflow-x-auto">
@@ -120,7 +122,7 @@ export default function TokenTable() {
             </thead>
 
             <tbody>
-              {sortedData.length === 0
+              {loading
                 ? Array.from({ length: 10 }).map((_, i) => (
                     <SkeletonRow key={`skeleton-${i}`} />
                   ))

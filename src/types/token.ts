@@ -4,14 +4,14 @@ export type PriceChangeDirection = "up" | "down" | null;
 
 export type TokenData = {
   pair: string;
-  marketCap: string;
-  liquidity: string;
-  volume: string;
-  txns: string;
-  auditStatus: string;
+  logo: string;
   price: number;
+  marketCap: string;
+  liquidity: string;      // Mocked
+  volume: string;
+  txns: string;           // Mocked
+  auditStatus: string;    // Mocked
   change1h: number;
   change24h: number;
   change7d: number;
-  logo: string;
 };

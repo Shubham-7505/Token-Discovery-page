@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, memo } from 'react';
 import dynamic from 'next/dynamic';
-import { TimeFrame } from '@/types/token';
+import { TimeFrame, TokenData } from '@/types/token';
 
 const TooltipProvider = dynamic(() => import('@/components/ui/tooltip').then(m => m.TooltipProvider), { ssr: false });
 const Tooltip = dynamic(() => import('@/components/ui/tooltip').then(m => m.Tooltip), { ssr: false });
@@ -19,20 +19,6 @@ const DialogDescription = dynamic(() => import('@/components/ui/dialog').then(m 
 const Popover = dynamic(() => import('@/components/ui/popover').then(m => m.Popover), { ssr: false });
 const PopoverTrigger = dynamic(() => import('@/components/ui/popover').then(m => m.PopoverTrigger), { ssr: false });
 const PopoverContent = dynamic(() => import('@/components/ui/popover').then(m => m.PopoverContent), { ssr: false });
-
-type TokenData = {
-  pair: string;
-  marketCap: string;
-  liquidity: string;
-  volume: string;
-  txns: string;
-  auditStatus: string;
-  price: number;
-  change1h: number;
-  change24h: number;
-  change7d: number;
-  logo: string;
-};
 
 interface TableRowProps {
   token: TokenData;
@@ -98,7 +84,7 @@ function TableRow({ token, timeFrame }: TableRowProps) {
       <td className="px-4 py-3">
         <div className="flex flex-col">
           <span
-            className={`transition-colors duration-300 ${
+            className={`transition-colors duration-300 font-mono ${
               priceChange === 'up'
                 ? 'text-green-600'
                 : priceChange === 'down'
@@ -108,7 +94,7 @@ function TableRow({ token, timeFrame }: TableRowProps) {
                 : 'text-red-500'
             }`}
           >
-            ${token.price.toFixed(2)}
+            ${token.price?.toFixed(4) ?? '--'}
           </span>
           <span
             className={`text-xs ${
@@ -116,7 +102,7 @@ function TableRow({ token, timeFrame }: TableRowProps) {
             }`}
           >
             {isPositive ? '+' : ''}
-            {percentageChange.toFixed(2)}%
+            {percentageChange?.toFixed(2) ?? '0.00'}%
           </span>
         </div>
       </td>
@@ -133,7 +119,7 @@ function TableRow({ token, timeFrame }: TableRowProps) {
           <DialogTrigger className="text-green-600 dark:text-green-400 underline hover:text-green-800 dark:hover:text-green-500">
             {token.auditStatus}
           </DialogTrigger>
-          <DialogContent className= "dark:bg-gray-800 dark:text-white">
+          <DialogContent className="dark:bg-gray-800 dark:text-white">
             <DialogHeader>
               <DialogTitle>{token.pair} Audit Report</DialogTitle>
               <DialogDescription>
